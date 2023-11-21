@@ -49,9 +49,6 @@ const App = () => {
       setSortDirection("asc");
     }
   };
-  const handleNameFilterConfirm = (confirm) => {
-    confirm();
-  };
 
   const resetFilters = () => {
     setFilterName(null);
@@ -158,10 +155,10 @@ const App = () => {
               <CaretDownOutlined />
             )
           ) : null}
-          <SearchOutlined
+          {/* <SearchOutlined
             style={{ marginLeft: 5, fontSize: 16, cursor: "pointer" }}
-            onClick={() => handleSearch(selectedKeys[0] || "")}
-          />
+            onClick={() => handleSearch(filterName || "")}
+          /> */}
         </div>
       ),
       dataIndex: "name",
@@ -177,6 +174,7 @@ const App = () => {
             value={selectedKeys[0]}
             onChange={handleNameFilterChange}
             onPressEnter={() => {
+              handleSearch(selectedKeys[0]);
               confirm();
             }}
             style={{ width: 188, marginBottom: 8, display: "block" }}
@@ -185,6 +183,8 @@ const App = () => {
             <Button
               type="primary"
               onClick={() => {
+                handleSearch(selectedKeys[0]);
+
                 confirm();
               }}
               icon={<i className="anticon anticon-filter"></i>}
