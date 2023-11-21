@@ -1,5 +1,5 @@
 import "./App.css";
-import { Table, Input, Button, Space, Pagination } from "antd";
+import { Table, Input, Button, Space } from "antd";
 import React, { useState } from "react";
 import {
   CaretUpOutlined,
@@ -31,8 +31,6 @@ const App = () => {
     name: true,
     experience: true,
   });
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
 
   const handleNameFilterChange = (e) => {
     const value = e.target.value;
@@ -361,7 +359,13 @@ const App = () => {
       <Table
         columns={columns.filter((column) => !column.hidden)}
         dataSource={filteredDataSource}
-        pagination={true}
+        pagination={{
+          pageSize: 5,
+          total: filteredDataSource.length,
+          showSizeChanger: true,
+          pageSizeOptions: ["5", "10", "20", "50"],
+          showTotal: (total) => `Total ${total} items`,
+        }}
       ></Table>
     </div>
   );
