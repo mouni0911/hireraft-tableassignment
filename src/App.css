@@ -44,3 +44,14 @@
 .reset-button {
   margin-left: 8px;
 }
+.eye-icon {
+  margin-right: 5px;
+}
+
+.eye-visible {
+  color: #00a854;
+}
+
+.eye-invisible {
+  color: #f04134;
+}

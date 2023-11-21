@@ -1,10 +1,11 @@
 import "./App.css";
-import { Table, Input, Button, Space } from "antd";
+import { Table, Input, Button, Space, Pagination } from "antd";
 import React, { useState } from "react";
 import {
   CaretUpOutlined,
   CaretDownOutlined,
-  SearchOutlined,
+  EyeOutlined,
+  EyeInvisibleOutlined,
 } from "@ant-design/icons";
 
 const App = () => {
@@ -22,10 +23,16 @@ const App = () => {
   ]);
 
   const [filterName, setFilterName] = useState(null);
-  const [filterExpecrience, setFilterExperience] = useState(null);
+  const [filterExperience, setFilterExperience] = useState(null);
   const [searchText, setSearchText] = useState("");
   const [sortedColumn, setSortedColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState("asc");
+  const [columnVisibility, setColumnVisibility] = useState({
+    name: true,
+    experience: true,
+  });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
 
   const handleNameFilterChange = (e) => {
     const value = e.target.value;
@@ -56,6 +63,13 @@ const App = () => {
     setSearchText("");
   };
 
+  const handleToggleColumnVisibility = (columnName) => {
+    setColumnVisibility((prevVisibility) => ({
+      ...prevVisibility,
+      [columnName]: !prevVisibility[columnName],
+    }));
+  };
+
   const sortedDataSource = [...dataSource].sort((a, b) => {
     if (sortDirection === "asc") {
       if (typeof a[sortedColumn] === "string") {
@@ -75,8 +89,8 @@ const App = () => {
   const filteredDataSource = sortedDataSource.filter(
     (item) =>
       (filterName === null || item.name.includes(filterName)) &&
-      (filterExpecrience === null ||
-        item.experience.toString().includes(filterExpecrience)) &&
+      (filterExperience === null ||
+        item.experience.toString().includes(filterExperience)) &&
       (searchText === "" ||
         Object.values(item)
           .map((val) => val.toString())
@@ -97,6 +111,18 @@ const App = () => {
           ) : (
             <CaretUpOutlined />
           )}
+          <Space>
+            <Button
+              type="link"
+              onClick={() => handleToggleColumnVisibility("_id")}
+            >
+              {columnVisibility._id ? (
+                <EyeOutlined />
+              ) : (
+                <EyeInvisibleOutlined />
+              )}
+            </Button>
+          </Space>
         </div>
       ),
       dataIndex: "_id",
@@ -143,6 +169,8 @@ const App = () => {
           handleSort("_id");
         },
       }),
+      // Specify whether to display the column
+      hidden: !columnVisibility._id,
     },
     {
       title: (
@@ -155,10 +183,18 @@ const App = () => {
               <CaretDownOutlined />
             )
           ) : null}
-          {/* <SearchOutlined
-            style={{ marginLeft: 5, fontSize: 16, cursor: "pointer" }}
-            onClick={() => handleSearch(filterName || "")}
-          /> */}
+          <Space>
+            <Button
+              type="link"
+              onClick={() => handleToggleColumnVisibility("name")}
+            >
+              {columnVisibility.name ? (
+                <EyeOutlined />
+              ) : (
+                <EyeInvisibleOutlined />
+              )}
+            </Button>
+          </Space>
         </div>
       ),
       dataIndex: "name",
@@ -207,6 +243,8 @@ const App = () => {
           handleSort("name");
         },
       }),
+      // Specify whether to display the column
+      hidden: !columnVisibility.name,
     },
     {
       title: (
@@ -221,6 +259,18 @@ const App = () => {
           ) : (
             <CaretUpOutlined />
           )}{" "}
+          <Space>
+            <Button
+              type="link"
+              onClick={() => handleToggleColumnVisibility("experience")}
+            >
+              {columnVisibility.experience ? (
+                <EyeOutlined />
+              ) : (
+                <EyeInvisibleOutlined />
+              )}
+            </Button>
+          </Space>
         </div>
       ),
       dataIndex: "experience",
@@ -258,13 +308,14 @@ const App = () => {
           </Space>
         </div>
       ),
-      onFilter: (value, record) => record.trips.toString().includes(value),
+      onFilter: (value, record) => record.experience.toString().includes(value),
       sortOrder: sortedColumn === "experience" && sortDirection,
       onHeaderCell: () => ({
         onClick: () => {
           handleSort("experience");
         },
       }),
+      hidden: !columnVisibility.experience,
     },
   ];
 
@@ -281,11 +332,36 @@ const App = () => {
           Reset Filters
         </Button>
       </div>
+      <div className="column-toggle">
+        <Button type="link" onClick={() => handleToggleColumnVisibility("_id")}>
+          <span style={{ color: "black" }}>ID </span>{" "}
+          {columnVisibility._id ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+        </Button>
+        <Button
+          type="link"
+          onClick={() => handleToggleColumnVisibility("name")}
+        >
+          <span style={{ color: "black" }}>Name</span>{" "}
+          {columnVisibility.name ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+        </Button>
+        <Button
+          type="link"
+          onClick={() => handleToggleColumnVisibility("experience")}
+        >
+          <span style={{ color: "black" }}>Experience</span>{" "}
+          {columnVisibility.experience ? (
+            <EyeOutlined />
+          ) : (
+            <EyeInvisibleOutlined />
+          )}
+        </Button>
+        {/* Add more buttons for additional columns */}
+      </div>
 
       <Table
-        columns={columns}
+        columns={columns.filter((column) => !column.hidden)}
         dataSource={filteredDataSource}
-        pagination={false}
+        pagination={true}
       ></Table>
     </div>
   );
